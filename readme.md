@@ -75,7 +75,7 @@ Solar_Azimuth,Solar_Elevation,solar_pos_x,solar_pos_y,solar_pos_z
 Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## Citation
-Zhuang X., Lvy G., Zhao Z. and Caldas L., Rapid Solar Potential Assessment for Complex Urban Morphologies: a Vector-Based Approach.
+Zhuang X., Lvy G., Zhao Z. and Caldas L. (2024) Rapid Solar Potential Assessment for Complex Urban Morphologies: a Vector-Based Approach.
 
 ## License
 
