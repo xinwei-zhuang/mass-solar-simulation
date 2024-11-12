@@ -1,7 +1,7 @@
 # Building Shade Calculator
 
 A Python tool for calculating shading patterns on buildings by analyzing building footprints and solar positions.
-![Alt text](image/pipeline.png)
+<img src="image/pipeline.png" width="500" alt="Logo">
 
 ## Features
 
