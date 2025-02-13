@@ -1,0 +1,379 @@
+ ! The following Location and Design Day data are produced as possible from the indicated data source.
+ ! Wind Speeds follow the indicated design conditions rather than traditional values (6.7 m/s heating, 3.35 m/s cooling)
+ ! No special attempts at re-creating or determining missing data parts (e.g. Wind speed or direction)
+ ! are done.  Therefore, you should look at the data and fill in any incorrect values as you desire.
+ 
+ ! SizingPeriod:DesignDay and other objects are formatted to meet criteria of EnergyPlus V7.1 and later
+ 
+ ! Some users have indicated that they would like the actual day of week from the weather file to be
+ ! used as the start day of week for a RunPeriod even though this is relatively meaningless for
+ ! TMY data files as future months will not use their start days of week (simulations need to show
+ ! continuity in day of week presentation).
+ 
+ ! In an effort to accomodate, the following initial month days are included:
+ ! Note JAN 1, 2021 is a Friday
+ ! Note FEB 1, 2021 is a Monday
+ ! Note MAR 1, 2018 is a Thursday
+ ! Note APR 1, 2018 is a Sunday
+ ! Note MAY 1, 2017 is a Monday
+ ! Note JUN 1, 2017 is a Thursday
+ ! Note JUL 1, 2018 is a Sunday
+ ! Note AUG 1, 2018 is a Wednesday
+ ! Note SEP 1, 2013 is a Sunday
+ ! Note OCT 1, 2018 is a Monday
+ ! Note NOV 1, 2013 is a Friday
+ ! Note DEC 1, 2012 is a Saturday
+ 
+ ! Since the RunPeriod object changes in V9.0, the following are RunPeriod objects in comments:
+ ! Version before EnergyPlus release V9.0
+ !RunPeriod,
+ !Weather Data,    !- Name
+ !  1,             !- Begin Month
+ !  1,             !- Begin Day of Month
+ !  12,            !- End Month
+ !  31,            !- End Day of Month
+ !Friday,      !- Day of Week for Start Day
+ !  No,            !- Use Weather File Holidays and Special Days
+ !  No,            !- Use Weather File Daylight Saving Period
+ ! Yes,            !- Apply Weekend Holiday Rule
+ ! Yes,            !- Use Weather File Rain Indicators
+ ! Yes;            !- Use Weather File Snow Indicators
+ 
+ ! Version EnergyPlus release V9.0+
+ !RunPeriod,
+ !Weather Data,    !- Name
+ !  1,             !- Begin Month
+ !  1,             !- Begin Day of Month
+ !   ,             !- Begin Year
+ !  12,            !- End Month
+ !  31,            !- End Day of Month
+ !   ,             !- End Year
+ !Friday,      !- Day of Week for Start Day
+ !  No,            !- Use Weather File Holidays and Special Days
+ !  No,            !- Use Weather File Daylight Saving Period
+ ! Yes,            !- Apply Weekend Holiday Rule
+ ! Yes,            !- Use Weather File Rain Indicators
+ ! Yes,            !- Use Weather File Snow Indicators
+ ! ;               !- Treat Weather as Actual
+ 
+ Site:Location,
+  San.Francisco-Presidio_CA_USA Design_Conditions,     !- Location Name
+      37.80,     !- Latitude {N+ S-}
+    -122.47,     !- Longitude {W- E+}
+      -8.00,     !- Time Zone Relative to GMT {GMT+/-}
+      63.00;     !- Elevation {m}
+  
+ ! The following Sizing Period objects for Extreme and Typical conditions are calculated
+ ! from the extreme (if any) and typical conditions on the weather source data.
+ ! The actual weeks that will be used will exist on the weather file.
+  
+ SizingPeriod:WeatherFileConditionType,
+   Summer Extreme,
+   SummerExtreme,
+   SummerDesignDay,
+   Yes,                !- Use Weather File Daylight Saving Period
+   Yes;                !- Use Weather File Rain and Snow Indicators
+ SizingPeriod:WeatherFileConditionType,
+   Summer Typical,
+   SummerTypical,
+   Monday,
+   Yes,                !- Use Weather File Daylight Saving Period
+   Yes;                !- Use Weather File Rain and Snow Indicators
+ SizingPeriod:WeatherFileConditionType,
+   Winter Extreme,
+   WinterExtreme,
+   WinterDesignDay,
+   Yes,                !- Use Weather File Daylight Saving Period
+   Yes;                !- Use Weather File Rain and Snow Indicators
+ SizingPeriod:WeatherFileConditionType,
+   Winter Typical,
+   WinterTypical,
+   Monday,
+   Yes,                !- Use Weather File Daylight Saving Period
+   Yes;                !- Use Weather File Rain and Snow Indicators
+ SizingPeriod:WeatherFileConditionType,
+   Autumn Typical,
+   AutumnTypical,
+   Monday,
+   Yes,                !- Use Weather File Daylight Saving Period
+   Yes;                !- Use Weather File Rain and Snow Indicators
+ SizingPeriod:WeatherFileConditionType,
+   Spring Typical,
+   SpringTypical,
+   Monday,
+   Yes,                !- Use Weather File Daylight Saving Period
+   Yes;                !- Use Weather File Rain and Snow Indicators
+ 
+
+
+ ! Site:Precipitation. RoofIrrigation and Schedule:File objects for rainfall
+ ! Data is built from rainfall data on the source data
+  Site:Precipitation,  
+    ScheduleAndDesignLevel,  !- Precipitation Model Type
+    0.532,  !- Design Level for Total Annual Precipitation
+    Rainfall Data from EPW file,    !- Precipitation Rates Schedule Name
+    0.532;  !- Average Total Annual Precipitation
+ 
+  RoofIrrigation,  
+    Schedule,  !- Irridation Model Type
+    Rainfall Data from EPW file,    !- Precipitation Rates Schedule Name
+    ;  !- Irrigation Maximum Saturation Threshold (default used)
+ 
+  Schedule:File, 
+    Rainfall Data from EPW file,  !- Name
+    ,                       !- Schedule Type Limits Name
+    USA_CA_San.Francisco-Presidio.994016_TMYx.2009-2023.rain,    !- File Name
+    1,                       !- Column Number
+    1,                       !- Rows to Skip at Top
+    8760;    !- Number of Hours of Data
+ 
+ !  WMO=994016 Time Zone= GMT-8.00 Code=NAP: (GMT-08:00 North America / Pacific)
+ !  Data Source="2021 ASHRAE Handbook -- Fundamentals - Chapter 14 Climatic Design Information"
+
+ RunPeriodControl:DaylightSavingTime,
+   2nd Sunday in March,    !- StartDate
+   1st Sunday in November;    !- EndDate
+ 
+ ! ======================= Annual Design Conditions SizingPeriod:DesignDay ======================
+ ! The following annual design conditions are reproduced from the climate data shown above.
+ ! Heating - 99%, 99.6%; Cooling - .4%, 1%, 2% for several humidity, etc conditions
+ !
+ ! San.Francisco-Presidio_CA_USA Extreme Annual Wind Speeds, 1%=9.2m/s, 2.5%=8.1m/s, 5%=7.3m/s
+ ! San.Francisco-Presidio_CA_USA Extreme Annual Temperatures, Max Drybulb=27.5C Min Drybulb=3.9C
+ ! San.Francisco-Presidio_CA_USA Extreme Annual Temperatures, Max Wetbulb=N/A Min Wetbulb=N/A
+  
+ ! San.Francisco-Presidio_CA_USA ASHRAE Climate Zone=4C
+  
+ ! San.Francisco-Presidio_CA_USA Annual Heating Design Conditions Wind Speed=3.0m/s Wind Dir=200
+ ! Coldest Month=DEC
+ ! San.Francisco-Presidio_CA_USA Annual Heating 99.6%, MaxDB=5.3C
+ SizingPeriod:DesignDay,
+  San.Francisco-Presidio Ann Htg 99.6% Condns DB,     !- Name
+         12,      !- Month
+         21,      !- Day of Month
+  WinterDesignDay,!- Day Type
+        5.3,      !- Maximum Dry-Bulb Temperature {C}
+        0.0,      !- Daily Dry-Bulb Temperature Range {C}
+ DefaultMultipliers, !- Dry-Bulb Temperature Range Modifier Type
+           ,      !- Dry-Bulb Temperature Range Modifier Day Schedule Name
+    Wetbulb,      !- Humidity Condition Type
+        5.3,      !- Wetbulb at Maximum Dry-Bulb {C}
+           ,      !- Humidity Indicating Day Schedule Name
+           ,      !- Humidity Ratio at Maximum Dry-Bulb {kgWater/kgDryAir}
+           ,      !- Enthalpy at Maximum Dry-Bulb {J/kg}
+           ,      !- Daily Wet-Bulb Temperature Range {deltaC}
+    100570.,      !- Barometric Pressure {Pa}
+        3.0,      !- Wind Speed {m/s} design conditions vs. traditional 6.71 m/s (15 mph)
+        200,      !- Wind Direction {Degrees; N=0, S=180}
+         No,      !- Rain {Yes/No}
+         No,      !- Snow on ground {Yes/No}
+         No,      !- Daylight Savings Time Indicator
+  ASHRAEClearSky, !- Solar Model Indicator
+           ,      !- Beam Solar Day Schedule Name
+           ,      !- Diffuse Solar Day Schedule Name
+           ,      !- ASHRAE Clear Sky Optical Depth for Beam Irradiance (taub)
+           ,      !- ASHRAE Clear Sky Optical Depth for Diffuse Irradiance (taud)
+       0.00;      !- Clearness {0.0 to 1.1}
+ 
+ ! San.Francisco-Presidio_CA_USA Annual Heating 99%, MaxDB=6.2C
+ SizingPeriod:DesignDay,
+  San.Francisco-Presidio Ann Htg 99% Condns DB,     !- Name
+         12,      !- Month
+         21,      !- Day of Month
+  WinterDesignDay,!- Day Type
+        6.2,      !- Maximum Dry-Bulb Temperature {C}
+        0.0,      !- Daily Dry-Bulb Temperature Range {C}
+ DefaultMultipliers, !- Dry-Bulb Temperature Range Modifier Type
+           ,      !- Dry-Bulb Temperature Range Modifier Day Schedule Name
+    Wetbulb,      !- Humidity Condition Type
+        6.2,      !- Wetbulb at Maximum Dry-Bulb {C}
+           ,      !- Humidity Indicating Day Schedule Name
+           ,      !- Humidity Ratio at Maximum Dry-Bulb {kgWater/kgDryAir}
+           ,      !- Enthalpy at Maximum Dry-Bulb {J/kg}
+           ,      !- Daily Wet-Bulb Temperature Range {deltaC}
+    100570.,      !- Barometric Pressure {Pa}
+        3.0,      !- Wind Speed {m/s} design conditions vs. traditional 6.71 m/s (15 mph)
+        200,      !- Wind Direction {Degrees; N=0, S=180}
+         No,      !- Rain {Yes/No}
+         No,      !- Snow on ground {Yes/No}
+         No,      !- Daylight Savings Time Indicator
+  ASHRAEClearSky, !- Solar Model Indicator
+           ,      !- Beam Solar Day Schedule Name
+           ,      !- Diffuse Solar Day Schedule Name
+           ,      !- ASHRAE Clear Sky Optical Depth for Beam Irradiance (taub)
+           ,      !- ASHRAE Clear Sky Optical Depth for Diffuse Irradiance (taud)
+       0.00;      !- Clearness {0.0 to 1.1}
+ 
+ ! San.Francisco-Presidio_CA_USA Annual Humidification 99.6% Design Conditions DP=>MCDB, DP=N/A
+ ! San.Francisco-Presidio_CA_USA Annual Humidification 99% Design Conditions DP=>MCDB, DP=N/A
+ ! San.Francisco-Presidio_CA_USA Annual Heating Wind 99.6% Design Conditions WS=>MCDB, WS=10.8m/s
+ SizingPeriod:DesignDay,
+  San.Francisco-Presidio Ann Htg Wind 99.6% Condns WS=>MCDB,     !- Name
+         12,      !- Month
+         21,      !- Day of Month
+  WinterDesignDay,!- Day Type
+       12.1,      !- Maximum Dry-Bulb Temperature {C}
+        0.0,      !- Daily Dry-Bulb Temperature Range {C}
+ DefaultMultipliers, !- Dry-Bulb Temperature Range Modifier Type
+           ,      !- Dry-Bulb Temperature Range Modifier Day Schedule Name
+    Wetbulb,      !- Humidity Condition Type
+       12.1,      !- Wetbulb at Maximum Dry-Bulb {C}
+           ,      !- Humidity Indicating Day Schedule Name
+           ,      !- Humidity Ratio at Maximum Dry-Bulb {kgWater/kgDryAir}
+           ,      !- Enthalpy at Maximum Dry-Bulb {J/kg}
+           ,      !- Daily Wet-Bulb Temperature Range {deltaC}
+    100570.,      !- Barometric Pressure {Pa}
+       10.8,      !- Wind Speed {m/s} design conditions vs. traditional 6.71 m/s (15 mph)
+        200,      !- Wind Direction {Degrees; N=0, S=180}
+         No,      !- Rain {Yes/No}
+         No,      !- Snow on ground {Yes/No}
+         No,      !- Daylight Savings Time Indicator
+  ASHRAEClearSky, !- Solar Model Indicator
+           ,      !- Beam Solar Day Schedule Name
+           ,      !- Diffuse Solar Day Schedule Name
+           ,      !- ASHRAE Clear Sky Optical Depth for Beam Irradiance (taub)
+           ,      !- ASHRAE Clear Sky Optical Depth for Diffuse Irradiance (taud)
+       0.00;      !- Clearness {0.0 to 1.1}
+ 
+ ! San.Francisco-Presidio_CA_USA Annual Heating Wind 99% Design Conditions WS=>MCDB, WS=9.0m/s
+ SizingPeriod:DesignDay,
+  San.Francisco-Presidio Ann Htg Wind 99% Condns WS=>MCDB,     !- Name
+         12,      !- Month
+         21,      !- Day of Month
+  WinterDesignDay,!- Day Type
+       11.6,      !- Maximum Dry-Bulb Temperature {C}
+        0.0,      !- Daily Dry-Bulb Temperature Range {C}
+ DefaultMultipliers, !- Dry-Bulb Temperature Range Modifier Type
+           ,      !- Dry-Bulb Temperature Range Modifier Day Schedule Name
+    Wetbulb,      !- Humidity Condition Type
+       11.6,      !- Wetbulb at Maximum Dry-Bulb {C}
+           ,      !- Humidity Indicating Day Schedule Name
+           ,      !- Humidity Ratio at Maximum Dry-Bulb {kgWater/kgDryAir}
+           ,      !- Enthalpy at Maximum Dry-Bulb {J/kg}
+           ,      !- Daily Wet-Bulb Temperature Range {deltaC}
+    100570.,      !- Barometric Pressure {Pa}
+        9.0,      !- Wind Speed {m/s} design conditions vs. traditional 6.71 m/s (15 mph)
+        200,      !- Wind Direction {Degrees; N=0, S=180}
+         No,      !- Rain {Yes/No}
+         No,      !- Snow on ground {Yes/No}
+         No,      !- Daylight Savings Time Indicator
+  ASHRAEClearSky, !- Solar Model Indicator
+           ,      !- Beam Solar Day Schedule Name
+           ,      !- Diffuse Solar Day Schedule Name
+           ,      !- ASHRAE Clear Sky Optical Depth for Beam Irradiance (taub)
+           ,      !- ASHRAE Clear Sky Optical Depth for Diffuse Irradiance (taud)
+       0.00;      !- Clearness {0.0 to 1.1}
+ 
+ ! San.Francisco-Presidio Annual Cooling Design Conditions Wind Speed=3.3m/s Wind Dir=250
+ ! Hottest Month=SEP
+ ! San.Francisco-Presidio_CA_USA Annual Cooling (DB=>MWB) .4%, MaxDB=22.2C MWB=N/A
+ ! San.Francisco-Presidio_CA_USA Annual Cooling (DB=>MWB) 1%, MaxDB=20.2C MWB=N/A
+ ! San.Francisco-Presidio_CA_USA Annual Cooling (DB=>MWB) 2%, MaxDB=18.8C MWB=N/A
+ ! San.Francisco-Presidio_CA_USA Annual Cooling (WB=>MDB) .4%, MDB=N/A WB=N/A
+ ! San.Francisco-Presidio_CA_USA Annual Cooling (WB=>MDB) 1%, MDB=N/A WB=N/A
+ ! San.Francisco-Presidio_CA_USA Annual Cooling (WB=>MDB) 2%, MDB=N/A WB=N/A
+ ! San.Francisco-Presidio_CA_USA Annual Cooling (DP=>MDB) .4%, MDB=N/A DP=N/A 
+ ! San.Francisco-Presidio_CA_USA Annual Cooling (DP=>MDB) 1%, MDB=N/A DP=N/A 
+ ! San.Francisco-Presidio_CA_USA Annual Cooling (DP=>MDB) 2%, MDB=N/A DP=N/A 
+ ! ======================= Monthly Design Conditions SizingPeriod:DesignDay ======================
+ ! The following monthly design conditions are reproduced from the climate data shown above.
+ ! Each 12 months are shown for: 
+ !      .4% Drybulb, 2% Drybulb, 5% Drybulb, 10% DryBulb (with coincident Wetbulb)
+ !      .4% Wetbulb, 2% Wetbulb, 5% Wetbulb, 10% Wetbulb (with coincident DryBulb)
+ !
+ ! San.Francisco-Presidio_CA_USA January (DB=>MCWB) .4%, MaxDB=17.4C MWB=N/A taub=0.323 taud=2.564
+ ! San.Francisco-Presidio_CA_USA February (DB=>MCWB) .4%, MaxDB=19.0C MWB=N/A taub=0.329 taud=2.545
+ ! San.Francisco-Presidio_CA_USA March (DB=>MCWB) .4%, MaxDB=19.4C MWB=N/A taub=0.340 taud=2.506
+ ! San.Francisco-Presidio_CA_USA April (DB=>MCWB) .4%, MaxDB=22.4C MWB=N/A taub=0.357 taud=2.423
+ ! San.Francisco-Presidio_CA_USA May (DB=>MCWB) .4%, MaxDB=22.4C MWB=N/A taub=0.363 taud=2.436
+ ! San.Francisco-Presidio_CA_USA June (DB=>MCWB) .4%, MaxDB=23.7C MWB=N/A taub=0.357 taud=2.457
+ ! San.Francisco-Presidio_CA_USA July (DB=>MCWB) .4%, MaxDB=19.1C MWB=N/A taub=0.367 taud=2.434
+ ! San.Francisco-Presidio_CA_USA August (DB=>MCWB) .4%, MaxDB=21.6C MWB=N/A taub=0.344 taud=2.499
+ ! San.Francisco-Presidio_CA_USA September (DB=>MCWB) .4%, MaxDB=25.1C MWB=N/A taub=0.345 taud=2.482
+ ! San.Francisco-Presidio_CA_USA October (DB=>MCWB) .4%, MaxDB=24.9C MWB=N/A taub=0.337 taud=2.548
+ ! San.Francisco-Presidio_CA_USA November (DB=>MCWB) .4%, MaxDB=21.5C MWB=N/A taub=0.322 taud=2.569
+ ! San.Francisco-Presidio_CA_USA December (DB=>MCWB) .4%, MaxDB=17.6C MWB=N/A taub=0.324 taud=2.567
+ ! San.Francisco-Presidio_CA_USA January (DB=>MCWB) 2%, MaxDB=15.8C MWB=N/A taub=0.323 taud=2.564
+ ! San.Francisco-Presidio_CA_USA February (DB=>MCWB) 2%, MaxDB=16.9C MWB=N/A taub=0.329 taud=2.545
+ ! San.Francisco-Presidio_CA_USA March (DB=>MCWB) 2%, MaxDB=16.5C MWB=N/A taub=0.340 taud=2.506
+ ! San.Francisco-Presidio_CA_USA April (DB=>MCWB) 2%, MaxDB=17.4C MWB=N/A taub=0.357 taud=2.423
+ ! San.Francisco-Presidio_CA_USA May (DB=>MCWB) 2%, MaxDB=17.8C MWB=N/A taub=0.363 taud=2.436
+ ! San.Francisco-Presidio_CA_USA June (DB=>MCWB) 2%, MaxDB=18.1C MWB=N/A taub=0.357 taud=2.457
+ ! San.Francisco-Presidio_CA_USA July (DB=>MCWB) 2%, MaxDB=17.9C MWB=N/A taub=0.367 taud=2.434
+ ! San.Francisco-Presidio_CA_USA August (DB=>MCWB) 2%, MaxDB=19.0C MWB=N/A taub=0.344 taud=2.499
+ ! San.Francisco-Presidio_CA_USA September (DB=>MCWB) 2%, MaxDB=20.7C MWB=N/A taub=0.345 taud=2.482
+ ! San.Francisco-Presidio_CA_USA October (DB=>MCWB) 2%, MaxDB=21.7C MWB=N/A taub=0.337 taud=2.548
+ ! San.Francisco-Presidio_CA_USA November (DB=>MCWB) 2%, MaxDB=19.0C MWB=N/A taub=0.322 taud=2.569
+ ! San.Francisco-Presidio_CA_USA December (DB=>MCWB) 2%, MaxDB=16.0C MWB=N/A taub=0.324 taud=2.567
+ ! San.Francisco-Presidio_CA_USA January (DB=>MCWB) 5%, MaxDB=14.7C MWB=N/A taub=0.323 taud=2.564
+ ! San.Francisco-Presidio_CA_USA February (DB=>MCWB) 5%, MaxDB=15.4C MWB=N/A taub=0.329 taud=2.545
+ ! San.Francisco-Presidio_CA_USA March (DB=>MCWB) 5%, MaxDB=15.2C MWB=N/A taub=0.340 taud=2.506
+ ! San.Francisco-Presidio_CA_USA April (DB=>MCWB) 5%, MaxDB=15.2C MWB=N/A taub=0.357 taud=2.423
+ ! San.Francisco-Presidio_CA_USA May (DB=>MCWB) 5%, MaxDB=15.8C MWB=N/A taub=0.363 taud=2.436
+ ! San.Francisco-Presidio_CA_USA June (DB=>MCWB) 5%, MaxDB=16.5C MWB=N/A taub=0.357 taud=2.457
+ ! San.Francisco-Presidio_CA_USA July (DB=>MCWB) 5%, MaxDB=17.1C MWB=N/A taub=0.367 taud=2.434
+ ! San.Francisco-Presidio_CA_USA August (DB=>MCWB) 5%, MaxDB=17.9C MWB=N/A taub=0.344 taud=2.499
+ ! San.Francisco-Presidio_CA_USA September (DB=>MCWB) 5%, MaxDB=18.9C MWB=N/A taub=0.345 taud=2.482
+ ! San.Francisco-Presidio_CA_USA October (DB=>MCWB) 5%, MaxDB=19.6C MWB=N/A taub=0.337 taud=2.548
+ ! San.Francisco-Presidio_CA_USA November (DB=>MCWB) 5%, MaxDB=17.1C MWB=N/A taub=0.322 taud=2.569
+ ! San.Francisco-Presidio_CA_USA December (DB=>MCWB) 5%, MaxDB=15.0C MWB=N/A taub=0.324 taud=2.567
+ ! San.Francisco-Presidio_CA_USA January (DB=>MCWB) 10%, MaxDB=13.8C MWB=N/A taub=0.323 taud=2.564
+ ! San.Francisco-Presidio_CA_USA February (DB=>MCWB) 10%, MaxDB=14.2C MWB=N/A taub=0.329 taud=2.545
+ ! San.Francisco-Presidio_CA_USA March (DB=>MCWB) 10%, MaxDB=14.2C MWB=N/A taub=0.340 taud=2.506
+ ! San.Francisco-Presidio_CA_USA April (DB=>MCWB) 10%, MaxDB=14.1C MWB=N/A taub=0.357 taud=2.423
+ ! San.Francisco-Presidio_CA_USA May (DB=>MCWB) 10%, MaxDB=14.9C MWB=N/A taub=0.363 taud=2.436
+ ! San.Francisco-Presidio_CA_USA June (DB=>MCWB) 10%, MaxDB=15.6C MWB=N/A taub=0.357 taud=2.457
+ ! San.Francisco-Presidio_CA_USA July (DB=>MCWB) 10%, MaxDB=16.3C MWB=N/A taub=0.367 taud=2.434
+ ! San.Francisco-Presidio_CA_USA August (DB=>MCWB) 10%, MaxDB=17.0C MWB=N/A taub=0.344 taud=2.499
+ ! San.Francisco-Presidio_CA_USA September (DB=>MCWB) 10%, MaxDB=17.8C MWB=N/A taub=0.345 taud=2.482
+ ! San.Francisco-Presidio_CA_USA October (DB=>MCWB) 10%, MaxDB=18.0C MWB=N/A taub=0.337 taud=2.548
+ ! San.Francisco-Presidio_CA_USA November (DB=>MCWB) 10%, MaxDB=15.9C MWB=N/A taub=0.322 taud=2.569
+ ! San.Francisco-Presidio_CA_USA December (DB=>MCWB) 10%, MaxDB=14.0C MWB=N/A taub=0.324 taud=2.567
+ ! San.Francisco-Presidio_CA_USA January (WB=>MCDB) .4%, DB=N/A WB=N/A taub=0.323 taud=2.564
+ ! San.Francisco-Presidio_CA_USA February (WB=>MCDB) .4%, DB=N/A WB=N/A taub=0.329 taud=2.545
+ ! San.Francisco-Presidio_CA_USA March (WB=>MCDB) .4%, DB=N/A WB=N/A taub=0.340 taud=2.506
+ ! San.Francisco-Presidio_CA_USA April (WB=>MCDB) .4%, DB=N/A WB=N/A taub=0.357 taud=2.423
+ ! San.Francisco-Presidio_CA_USA May (WB=>MCDB) .4%, DB=N/A WB=N/A taub=0.363 taud=2.436
+ ! San.Francisco-Presidio_CA_USA June (WB=>MCDB) .4%, DB=N/A WB=N/A taub=0.357 taud=2.457
+ ! San.Francisco-Presidio_CA_USA July (WB=>MCDB) .4%, DB=N/A WB=N/A taub=0.367 taud=2.434
+ ! San.Francisco-Presidio_CA_USA August (WB=>MCDB) .4%, DB=N/A WB=N/A taub=0.344 taud=2.499
+ ! San.Francisco-Presidio_CA_USA September (WB=>MCDB) .4%, DB=N/A WB=N/A taub=0.345 taud=2.482
+ ! San.Francisco-Presidio_CA_USA October (WB=>MCDB) .4%, DB=N/A WB=N/A taub=0.337 taud=2.548
+ ! San.Francisco-Presidio_CA_USA November (WB=>MCDB) .4%, DB=N/A WB=N/A taub=0.322 taud=2.569
+ ! San.Francisco-Presidio_CA_USA December (WB=>MCDB) .4%, DB=N/A WB=N/A taub=0.324 taud=2.567
+ ! San.Francisco-Presidio_CA_USA January (WB=>MCDB) 2%, MaxDB=N/A MWB=N/A taub=0.323 taud=2.564
+ ! San.Francisco-Presidio_CA_USA February (WB=>MCDB) 2%, MaxDB=N/A MWB=N/A taub=0.329 taud=2.545
+ ! San.Francisco-Presidio_CA_USA March (WB=>MCDB) 2%, MaxDB=N/A MWB=N/A taub=0.340 taud=2.506
+ ! San.Francisco-Presidio_CA_USA April (WB=>MCDB) 2%, MaxDB=N/A MWB=N/A taub=0.357 taud=2.423
+ ! San.Francisco-Presidio_CA_USA May (WB=>MCDB) 2%, MaxDB=N/A MWB=N/A taub=0.363 taud=2.436
+ ! San.Francisco-Presidio_CA_USA June (WB=>MCDB) 2%, MaxDB=N/A MWB=N/A taub=0.357 taud=2.457
+ ! San.Francisco-Presidio_CA_USA July (WB=>MCDB) 2%, MaxDB=N/A MWB=N/A taub=0.367 taud=2.434
+ ! San.Francisco-Presidio_CA_USA August (WB=>MCDB) 2%, MaxDB=N/A MWB=N/A taub=0.344 taud=2.499
+ ! San.Francisco-Presidio_CA_USA September (WB=>MCDB) 2%, MaxDB=N/A MWB=N/A taub=0.345 taud=2.482
+ ! San.Francisco-Presidio_CA_USA October (WB=>MCDB) 2%, MaxDB=N/A MWB=N/A taub=0.337 taud=2.548
+ ! San.Francisco-Presidio_CA_USA November (WB=>MCDB) 2%, MaxDB=N/A MWB=N/A taub=0.322 taud=2.569
+ ! San.Francisco-Presidio_CA_USA December (WB=>MCDB) 2%, MaxDB=N/A MWB=N/A taub=0.324 taud=2.567
+ ! San.Francisco-Presidio_CA_USA January (WB=>MCDB) 5%, MaxDB=N/A MWB=N/A taub=0.323 taud=2.564
+ ! San.Francisco-Presidio_CA_USA February (WB=>MCDB) 5%, MaxDB=N/A MWB=N/A taub=0.329 taud=2.545
+ ! San.Francisco-Presidio_CA_USA March (WB=>MCDB) 5%, MaxDB=N/A MWB=N/A taub=0.340 taud=2.506
+ ! San.Francisco-Presidio_CA_USA April (WB=>MCDB) 5%, MaxDB=N/A MWB=N/A taub=0.357 taud=2.423
+ ! San.Francisco-Presidio_CA_USA May (WB=>MCDB) 5%, MaxDB=N/A MWB=N/A taub=0.363 taud=2.436
+ ! San.Francisco-Presidio_CA_USA June (WB=>MCDB) 5%, MaxDB=N/A MWB=N/A taub=0.357 taud=2.457
+ ! San.Francisco-Presidio_CA_USA July (WB=>MCDB) 5%, MaxDB=N/A MWB=N/A taub=0.367 taud=2.434
+ ! San.Francisco-Presidio_CA_USA August (WB=>MCDB) 5%, MaxDB=N/A MWB=N/A taub=0.344 taud=2.499
+ ! San.Francisco-Presidio_CA_USA September (WB=>MCDB) 5%, MaxDB=N/A MWB=N/A taub=0.345 taud=2.482
+ ! San.Francisco-Presidio_CA_USA October (WB=>MCDB) 5%, MaxDB=N/A MWB=N/A taub=0.337 taud=2.548
+ ! San.Francisco-Presidio_CA_USA November (WB=>MCDB) 5%, MaxDB=N/A MWB=N/A taub=0.322 taud=2.569
+ ! San.Francisco-Presidio_CA_USA December (WB=>MCDB) 5%, MaxDB=N/A MWB=N/A taub=0.324 taud=2.567
+ ! San.Francisco-Presidio_CA_USA January (WB=>MCDB) 10%, MaxDB=N/A MWB=N/A taub=0.323 taud=2.564
+ ! San.Francisco-Presidio_CA_USA February (WB=>MCDB) 10%, MaxDB=N/A MWB=N/A taub=0.329 taud=2.545
+ ! San.Francisco-Presidio_CA_USA March (WB=>MCDB) 10%, MaxDB=N/A MWB=N/A taub=0.340 taud=2.506
+ ! San.Francisco-Presidio_CA_USA April (WB=>MCDB) 10%, MaxDB=N/A MWB=N/A taub=0.357 taud=2.423
+ ! San.Francisco-Presidio_CA_USA May (WB=>MCDB) 10%, MaxDB=N/A MWB=N/A taub=0.363 taud=2.436
+ ! San.Francisco-Presidio_CA_USA June (WB=>MCDB) 10%, MaxDB=N/A MWB=N/A taub=0.357 taud=2.457
+ ! San.Francisco-Presidio_CA_USA July (WB=>MCDB) 10%, MaxDB=N/A MWB=N/A taub=0.367 taud=2.434
+ ! San.Francisco-Presidio_CA_USA August (WB=>MCDB) 10%, MaxDB=N/A MWB=N/A taub=0.344 taud=2.499
+ ! San.Francisco-Presidio_CA_USA September (WB=>MCDB) 10%, MaxDB=N/A MWB=N/A taub=0.345 taud=2.482
+ ! San.Francisco-Presidio_CA_USA October (WB=>MCDB) 10%, MaxDB=N/A MWB=N/A taub=0.337 taud=2.548
+ ! San.Francisco-Presidio_CA_USA November (WB=>MCDB) 10%, MaxDB=N/A MWB=N/A taub=0.322 taud=2.569
+ ! San.Francisco-Presidio_CA_USA December (WB=>MCDB) 10%, MaxDB=N/A MWB=N/A taub=0.324 taud=2.567
